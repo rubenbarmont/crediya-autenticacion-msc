@@ -1,14 +1,23 @@
 package co.com.crediya.model.user;
-import lombok.Builder;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.UUID;
 
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@ToString
+@EqualsAndHashCode
 @Builder(toBuilder = true)
 public class User {
+
+    private final UUID id;
+    private final String name;
+    private final String lastName;
+    private final LocalDate birthDate;
+    private final String address;
+    private final String phoneNumber;
+    private final String email;
+    private final BigDecimal baseSalary;
+
 }
