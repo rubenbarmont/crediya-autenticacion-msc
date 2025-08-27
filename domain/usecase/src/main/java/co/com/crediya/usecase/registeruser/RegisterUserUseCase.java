@@ -19,7 +19,6 @@ public class RegisterUserUseCase {
         return Mono.just(user)
                 // Usamos nuestra interfaz logger
                 .doOnNext(u -> logger.info("Starting user registration process for email: {}", u.getEmail()))
-                .map(this::assignId)
                 .doOnNext(UserValidator::validate)
                 .flatMap(this::checkIfEmailExists)
                 .flatMap(userRepository::save)
