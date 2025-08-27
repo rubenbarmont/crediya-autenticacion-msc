@@ -2,6 +2,7 @@ package co.com.crediya.usecase.registeruser;
 
 import co.com.crediya.model.user.User;
 import co.com.crediya.model.user.UserValidator;
+import co.com.crediya.model.user.excepcion.DomainException;
 import co.com.crediya.model.user.excepcion.EmailAlreadyExistsException;
 import co.com.crediya.model.user.gateways.LoggerPort;
 import co.com.crediya.model.user.gateways.UserRepository;
@@ -13,25 +14,27 @@ import java.util.UUID;
 public class RegisterUserUseCase {
 
     private final UserRepository userRepository;
-    private final LoggerPort logger; // <-- La nueva dependencia
+    private final LoggerPort logger;
 
     public Mono<User> execute(User user) {
         return Mono.just(user)
-                // Usamos nuestra interfaz logger
                 .doOnNext(u -> logger.info("Starting user registration process for email: {}", u.getEmail()))
                 .doOnNext(UserValidator::validate)
                 .flatMap(this::checkIfEmailExists)
-                .flatMap(userRepository::save)
+                .flatMap(userRepository::save) // Le pasamos el usuario con ID nulo
                 .doOnSuccess(savedUser -> logger.info("User registered successfully with ID: {}", savedUser.getId()))
-                .doOnError(error -> logger.error(
-                        String.format("Error during user registration for email: %s", user.getEmail()),
-                        error
-                ));
+                .doOnError(error -> {
+                    // Solo registramos el stack trace si NO es una excepción de dominio controlada.
+                    if (!(error instanceof DomainException)) {
+                        logger.error(
+                                String.format("Unexpected error during user registration for email: %s", user.getEmail()),
+                                error
+                        );
+                    }
+                });
     }
 
-    private User assignId(User user) {
-        return user.toBuilder().id(UUID.randomUUID()).build();
-    }
+    // El método assignId() se elimina.
 
     private Mono<User> checkIfEmailExists(User user) {
         return userRepository.findByEmail(user.getEmail())
