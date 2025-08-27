@@ -1,8 +1,7 @@
-// path: .../api/Handler.java
 package co.com.crediya.api;
 
 import co.com.crediya.api.dto.UserRequestDTO;
-import co.com.crediya.api.validator.RequestValidator; // <-- 1. Importamos la nueva clase
+import co.com.crediya.api.validator.RequestValidator;
 import co.com.crediya.model.user.User;
 import co.com.crediya.usecase.registeruser.RegisterUserUseCase;
 import lombok.RequiredArgsConstructor;
@@ -21,19 +20,17 @@ import java.time.format.DateTimeParseException;
 public class Handler {
 
     private final RegisterUserUseCase registerUserUseCase;
-    private final RequestValidator requestValidator; // <-- 2. Inyectamos nuestro nuevo validador
+    private final RequestValidator requestValidator;
 
     public Mono<ServerResponse> registerUser(ServerRequest request) {
         return request.bodyToMono(UserRequestDTO.class)
-                .flatMap(requestValidator::validate) // <-- 3. Usamos el validador. Es más limpio con flatMap.
+                .flatMap(requestValidator::validate)
                 .flatMap(this::mapToDomain)
                 .flatMap(registerUserUseCase::execute)
                 .flatMap(savedUser -> ServerResponse
                         .created(URI.create("/api/v1/usuarios/" + savedUser.getId()))
                         .bodyValue(savedUser));
     }
-
-    // 4. El método privado 'validateDto' se elimina por completo de esta clase.
 
     private Mono<User> mapToDomain(UserRequestDTO dto) {
         try {

@@ -8,10 +8,6 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class Slf4jLoggerAdapter implements LoggerPort {
 
-    /**
-     * CAMBIO: Actualizamos la firma para que coincida con la interfaz.
-     * La llamada a log.info() ya no necesita el casting (Object[]).
-     */
     @Override
     public void info(String message, Object... args) {
         log.info(message, args);

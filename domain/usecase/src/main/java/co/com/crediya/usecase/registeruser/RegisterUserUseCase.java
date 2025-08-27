@@ -8,7 +8,6 @@ import co.com.crediya.model.user.gateways.LoggerPort;
 import co.com.crediya.model.user.gateways.UserRepository;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 public class RegisterUserUseCase {
@@ -21,10 +20,9 @@ public class RegisterUserUseCase {
                 .doOnNext(u -> logger.info("Starting user registration process for email: {}", u.getEmail()))
                 .doOnNext(UserValidator::validate)
                 .flatMap(this::checkIfEmailExists)
-                .flatMap(userRepository::save) // Le pasamos el usuario con ID nulo
+                .flatMap(userRepository::save)
                 .doOnSuccess(savedUser -> logger.info("User registered successfully with ID: {}", savedUser.getId()))
                 .doOnError(error -> {
-                    // Solo registramos el stack trace si NO es una excepción de dominio controlada.
                     if (!(error instanceof DomainException)) {
                         logger.error(
                                 String.format("Unexpected error during user registration for email: %s", user.getEmail()),
@@ -33,8 +31,6 @@ public class RegisterUserUseCase {
                     }
                 });
     }
-
-    // El método assignId() se elimina.
 
     private Mono<User> checkIfEmailExists(User user) {
         return userRepository.findByEmail(user.getEmail())

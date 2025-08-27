@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("users") // El nombre de tu tabla en PostgreSQL
+@Table("users")
 public class UserData {
 
     @Id

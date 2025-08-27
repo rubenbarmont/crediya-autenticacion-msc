@@ -1,4 +1,3 @@
-// path: infrastructure/entry-points/reactive-web/src/main/java/co/com/crediya/api/GlobalExceptionHandler.java
 package co.com.crediya.api;
 
 import co.com.crediya.api.dto.ApiErrorResponse;
@@ -10,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ServerWebInputException;
-
-import java.util.Map;
 
 @ControllerAdvice
 @RequiredArgsConstructor
@@ -40,5 +37,4 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // Y así para cualquier otra excepción específica que queramos controlar...
 }

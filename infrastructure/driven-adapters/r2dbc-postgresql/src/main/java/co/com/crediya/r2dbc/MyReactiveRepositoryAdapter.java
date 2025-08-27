@@ -11,14 +11,12 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @Repository
-// Quitamos @RequiredArgsConstructor de la clase para definir nuestro propio constructor
 public class MyReactiveRepositoryAdapter
         extends ReactiveAdapterOperations<User, UserData, UUID, MyReactiveRepository>
         implements UserRepository {
 
-    private final TransactionalOperator transactionalOperator; // <-- 2. AÑADIMOS LA DEPENDENCIA
+    private final TransactionalOperator transactionalOperator;
 
-    // 3. Modificamos el constructor para recibir el TransactionalOperator
     public MyReactiveRepositoryAdapter(MyReactiveRepository repository, ObjectMapper mapper, TransactionalOperator transactionalOperator) {
         super(repository, mapper, d -> mapper.mapBuilder(d, User.UserBuilder.class).build());
         this.transactionalOperator = transactionalOperator;
@@ -26,10 +24,8 @@ public class MyReactiveRepositoryAdapter
 
     @Override
     public Mono<User> save(User user) {
-        // La lógica de guardado de la clase padre es Mono<User>
-        // La envolvemos en el operador transaccional.
         return super.save(user)
-                .as(transactionalOperator::transactional); // <-- 4. ENVOLVEMOS LA OPERACIÓN EN UNA TRANSACCIÓN
+                .as(transactionalOperator::transactional);
     }
 
     @Override

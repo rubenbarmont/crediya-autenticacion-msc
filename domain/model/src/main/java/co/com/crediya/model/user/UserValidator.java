@@ -9,20 +9,17 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class UserValidator {
-    // ... (las constantes se mantienen igual) ...
+
     private static final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
     private static final BigDecimal MIN_SALARY = BigDecimal.ZERO;
     private static final BigDecimal MAX_SALARY = new BigDecimal("15000000");
 
-    private UserValidator() {
-        // Clase de utilidad, no instanciable
-    }
+    private UserValidator() {}
 
     public static void validate(User user) {
         Objects.requireNonNull(user, "User cannot be null");
 
-        // ... (las validaciones existentes se mantienen) ...
         if (isNullOrEmpty(user.getName())) {
             throw new DomainException("The 'name' field is required.");
         }
@@ -42,7 +39,6 @@ public class UserValidator {
             throw new DomainException("The base salary must be between " + MIN_SALARY + " and " + MAX_SALARY + ".");
         }
 
-        // --- NUEVA VALIDACIÓN ---
         if (user.getBirthDate() != null && user.getBirthDate().isAfter(LocalDate.now())) {
             throw new DomainException("The birth date cannot be in the future.");
         }
