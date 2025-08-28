@@ -23,10 +23,4 @@ public class ApiErrorResponse {
         this.validationErrors = null;
     }
 
-    public ApiErrorResponse(HttpStatus status, String message, Map<String, String> validationErrors) {
-        this.status = status.value();
-        this.message = message;
-        this.timestamp = LocalDateTime.now();
-        this.validationErrors = validationErrors;
-    }
 }

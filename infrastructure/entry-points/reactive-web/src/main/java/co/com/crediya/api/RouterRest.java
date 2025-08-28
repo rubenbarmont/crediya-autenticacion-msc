@@ -13,7 +13,6 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 public class RouterRest {
     @Bean
     public RouterFunction<ServerResponse> routerFunction(Handler handler) {
-        // Eliminamos las rutas de ejemplo y definimos nuestra primera ruta real
         return route(
                 POST("/api/v1/usuarios").and(accept(MediaType.APPLICATION_JSON)),
                 handler::registerUser
