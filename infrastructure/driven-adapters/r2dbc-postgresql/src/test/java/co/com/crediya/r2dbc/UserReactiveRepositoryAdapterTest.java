@@ -19,16 +19,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MyReactiveRepositoryAdapterTest {
+class UserReactiveRepositoryAdapterTest {
 
     @Mock
-    private MyReactiveRepository repository; // El repositorio de Spring Data que mockeamos
+    private UserReactiveRepository repository; // El repositorio de Spring Data que mockeamos
 
     @Mock
     private ObjectMapper mapper; // El mapper que usa tu clase genérica
 
     @InjectMocks
-    private MyReactiveRepositoryAdapter adapter; // La clase que estamos probando
+    private UserReactiveRepositoryAdapter adapter; // La clase que estamos probando
 
     private User userDomain;
     private UserData userData;

@@ -39,4 +39,9 @@ public class PostgreSQLConnectionPool {
 
 		return new ConnectionPool(poolConfiguration);
 	}
+
+    /*@Bean
+    public ReactiveTransactionManager transactionManager(ConnectionFactory connectionFactory) {
+        return new R2dbcTransactionManager(connectionFactory);
+    }*/
 }

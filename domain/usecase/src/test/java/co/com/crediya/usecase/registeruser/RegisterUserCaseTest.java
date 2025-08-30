@@ -5,6 +5,7 @@ import co.com.crediya.model.user.excepcion.DomainException;
 import co.com.crediya.model.user.excepcion.EmailAlreadyExistsException;
 import co.com.crediya.model.user.gateways.LoggerPort;
 import co.com.crediya.model.user.gateways.UserRepository;
+import co.com.crediya.usecase.command.registeruser.RegisterUserUseCase;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
