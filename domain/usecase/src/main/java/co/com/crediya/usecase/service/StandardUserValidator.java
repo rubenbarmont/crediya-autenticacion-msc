@@ -2,7 +2,6 @@ package co.com.crediya.usecase.service;
 
 import co.com.crediya.model.user.User;
 import co.com.crediya.model.user.exceptions.InvalidUserDataException;
-import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
@@ -12,7 +11,6 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-@Component
 public class StandardUserValidator implements UserValidator {
 
     private static final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";

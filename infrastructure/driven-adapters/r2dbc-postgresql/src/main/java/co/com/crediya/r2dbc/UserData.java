@@ -1,3 +1,4 @@
+/*
 package co.com.crediya.r2dbc;
 
 import lombok.AllArgsConstructor;
@@ -29,3 +30,4 @@ public class UserData {
     private BigDecimal baseSalary;
 
 }
+*/

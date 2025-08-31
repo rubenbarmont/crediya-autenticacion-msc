@@ -1,7 +1,8 @@
 package co.com.crediya.r2dbc.entity;
 
-import lombok.*
+import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 public class UserEntity { // <-- Nombre corregido
 
     @Id
+    @Column("id_user")
     private Long idUser;
     private Long identityDocument;
     private String name;

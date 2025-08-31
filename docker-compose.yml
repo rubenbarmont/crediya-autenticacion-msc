@@ -6,7 +6,7 @@ services:
     container_name: postgres-db
     restart: always
     environment:
-      POSTGRES_DB: autenticacion
+      POSTGRES_DB: crediya_db
       POSTGRES_USER: root
       POSTGRES_PASSWORD: user
     ports:

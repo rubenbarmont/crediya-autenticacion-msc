@@ -1,3 +1,4 @@
+/*
 package co.com.crediya.api;
 
 import co.com.crediya.api.dto.ApiErrorResponse;
@@ -37,4 +38,4 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-}
+}*/

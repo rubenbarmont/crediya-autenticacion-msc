@@ -1,3 +1,4 @@
+/*
 package co.com.crediya.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -23,4 +24,4 @@ public class ApiErrorResponse {
         this.validationErrors = null;
     }
 
-}
+}*/
