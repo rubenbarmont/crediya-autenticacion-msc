@@ -31,10 +31,10 @@ adapters:
   r2dbc:
     host: "localhost"
     port: 5432
-    database: "crediya_db"
+    database: "autenticacion"
     schema: "public"
-    username: "root"
-    password: "user"
+    username: "user"
+    password: "password"
 
 
 

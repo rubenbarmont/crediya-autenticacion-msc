@@ -2,7 +2,6 @@ package co.com.crediya.api.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

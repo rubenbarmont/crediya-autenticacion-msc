@@ -11,11 +11,9 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class RegisterUserUseCase {
 
-    // quitamos el logger y el TransactionalOperator
     private final UserValidator userValidator;
     private final UserRepository userRepository;
 
-    // Renombramos el método para reflejar que es el núcleo de la lógica
     public Mono<User> execute(User user) {
         // La lógica de negocio pura, sin logs ni transacciones
         return userValidator.validate(user)

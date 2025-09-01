@@ -2,7 +2,6 @@ package co.com.crediya.api;
 
 import co.com.crediya.api.dto.UserRequestDTO;
 import co.com.crediya.api.mapper.UserApiMapper;
-import co.com.crediya.model.user.User;
 import co.com.crediya.model.user.exceptions.EmailAlreadyExistsException;
 import co.com.crediya.model.user.exceptions.InvalidUserDataException;
 import co.com.crediya.usecase.command.registeruser.RegisterUserUseCase;
