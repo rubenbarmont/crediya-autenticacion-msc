@@ -1,5 +1,6 @@
 package co.com.crediya.api;
 
+import co.com.crediya.api.dto.ErrorResponseDTO;
 import co.com.crediya.api.dto.UserRequestDTO;
 import co.com.crediya.api.mapper.UserApiMapper;
 import co.com.crediya.model.user.exceptions.EmailAlreadyExistsException;
@@ -18,6 +19,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDateTime;
+
 @Component
 @RequiredArgsConstructor
 public class UserHandler {
@@ -29,25 +32,31 @@ public class UserHandler {
     private final UserApiMapper userApiMapper;
     private final TransactionalOperator transactionalOperator;
 
+    /**
+     * Maneja la petición para registrar un nuevo usuario.
+     */
     public Mono<ServerResponse> registerUser(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(UserRequestDTO.class)
                 .map(userApiMapper::toDomain)
-                .doOnNext(user -> log.info("Iniciando caso de uso para registro de usuario con email: {}", user.getEmail()))
-                .flatMap(registerUserUseCase::execute) // Llamamos al método "puro"
-                .as(transactionalOperator::transactional) // Aplicamos la transacción aquí, fuera del caso de uso
+                .doOnNext(user -> log.info("Iniciando caso de uso para registro de usuario con documento: {}", user.getIdentityDocument()))
+                .flatMap(registerUserUseCase::execute)
+                .as(transactionalOperator::transactional)
                 .doOnSuccess(savedUser -> log.info("Usuario registrado exitosamente con ID: {}", savedUser.getIdUser()))
                 .flatMap(user -> ServerResponse.status(HttpStatus.CREATED)
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(user))
                 .doOnError(error -> log.error("Error al registrar usuario: {}", error.getMessage()))
                 .onErrorResume(InvalidUserDataException.class, e ->
-                        ServerResponse.badRequest().bodyValue(e.getErrors()))
+                        ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON).bodyValue(e.getErrors()))
                 .onErrorResume(IdentityDocumentAlreadyExistsException.class, e ->
-                        ServerResponse.status(HttpStatus.CONFLICT).bodyValue(e.getMessage()))
+                        buildErrorResponse(e, HttpStatus.CONFLICT, "IDENTITY_DOCUMENT_ALREADY_EXISTS", serverRequest))
                 .onErrorResume(EmailAlreadyExistsException.class, e ->
-                        ServerResponse.status(HttpStatus.CONFLICT).bodyValue(e.getMessage()));
+                        buildErrorResponse(e, HttpStatus.CONFLICT, "EMAIL_ALREADY_EXISTS", serverRequest));
     }
 
+    /**
+     * Maneja la petición para verificar si un usuario existe por su documento.
+     */
     public Mono<ServerResponse> checkUserExistsByIdentityDocument(ServerRequest serverRequest) {
         return Mono.just(serverRequest.queryParam("identityDocument").orElse("0"))
                 .map(Long::valueOf)
@@ -57,5 +66,18 @@ public class UserHandler {
                         .bodyValue(exists));
     }
 
-
+    /**
+     * Construye una respuesta de error estandarizada en formato JSON.
+     */
+    private Mono<ServerResponse> buildErrorResponse(Throwable err, HttpStatus status, String errorCode, ServerRequest request) {
+        ErrorResponseDTO errorDto = ErrorResponseDTO.builder()
+                .timestamp(LocalDateTime.now())
+                .error(errorCode)
+                .message(err.getMessage())
+                .path(request.path())
+                .build();
+        return ServerResponse.status(status)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(errorDto);
+    }
 }
