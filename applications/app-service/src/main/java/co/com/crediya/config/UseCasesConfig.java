@@ -2,6 +2,7 @@ package co.com.crediya.config;
 
 import co.com.crediya.model.user.gateways.UserRepository;
 import co.com.crediya.usecase.command.registeruser.RegisterUserUseCase;
+import co.com.crediya.usecase.query.checkuser.CheckUserExistenceUseCase; // <-- Importar la clase
 import co.com.crediya.usecase.service.StandardUserValidator;
 import co.com.crediya.usecase.service.UserValidator;
 import org.springframework.context.annotation.Bean;
@@ -24,4 +25,10 @@ public class UseCasesConfig {
                 UserRepository userRepository) {
                 return new RegisterUserUseCase(userValidator, userRepository);
         }
+
+        @Bean
+        public CheckUserExistenceUseCase checkUserExistenceUseCase(UserRepository userRepository) {
+                return new CheckUserExistenceUseCase(userRepository);
+        }
+
 }

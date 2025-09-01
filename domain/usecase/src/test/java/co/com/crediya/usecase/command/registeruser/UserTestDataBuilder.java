@@ -17,11 +17,17 @@ public class UserTestDataBuilder {
     private BigDecimal baseSalary;
 
     public UserTestDataBuilder() {
-        // Provide valid default values for a standard user
+        // Proporciona valores válidos por defecto para un usuario estándar
+        this.identityDocument = 1037666999L;
         this.name = "John";
         this.lastName = "Doe";
         this.email = "john.doe@example.com";
         this.baseSalary = new BigDecimal("5000000");
+    }
+
+    public UserTestDataBuilder withIdentityDocument(Long identityDocument) {
+        this.identityDocument = identityDocument;
+        return this;
     }
 
     public UserTestDataBuilder withName(String name) {
@@ -41,6 +47,11 @@ public class UserTestDataBuilder {
 
     public UserTestDataBuilder withBaseSalary(BigDecimal baseSalary) {
         this.baseSalary = baseSalary;
+        return this;
+    }
+
+    public UserTestDataBuilder withId(Long idUser) {
+        this.idUser = idUser;
         return this;
     }
 

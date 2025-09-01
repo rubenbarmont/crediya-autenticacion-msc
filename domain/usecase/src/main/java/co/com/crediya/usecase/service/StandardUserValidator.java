@@ -19,6 +19,7 @@ public class StandardUserValidator implements UserValidator {
     @Override
     public Mono<User> validate(User user) {
         List<String> errors = Stream.of(
+                        validateIdentityDocument(user.getIdentityDocument()),
                         validateRequiredField(user.getName(), FIELD_NAME),
                         validateRequiredField(user.getLastName(), FIELD_LAST_NAME),
                         validateEmail(user.getEmail()),
@@ -32,6 +33,15 @@ public class StandardUserValidator implements UserValidator {
         }
         return Mono.just(user);
     }
+
+    private Optional<String> validateIdentityDocument(Long identityDocument) {
+        if (Objects.isNull(identityDocument)) {
+            return Optional.of(String.format(ERROR_FIELD_REQUIRED, FIELD_IDENTITY_DOCUMENT));
+        }
+        // Aquí se podrían añadir más validaciones en el futuro (ej. que sea un número positivo).
+        return Optional.empty();
+    }
+
 
     private Optional<String> validateRequiredField(String value, String fieldName) {
         return (Objects.isNull(value) || value.isBlank())
