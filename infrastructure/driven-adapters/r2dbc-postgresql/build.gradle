@@ -1,0 +1,22 @@
+dependencies {
+    implementation project(':model')
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+    implementation 'jakarta.persistence:jakarta.persistence-api' // TODO: Check if it's still necessary
+    implementation 'org.postgresql:r2dbc-postgresql'
+    implementation 'org.reactivecommons.utils:object-mapper-api:0.1.0'
+
+    // --- AÑADIR ESTAS LÍNEAS ---
+    // Lombok (necesario para MapStruct y la entidad)
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    // MapStruct
+    implementation "org.mapstruct:mapstruct:${mapStructVersion}"
+    annotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
+    annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
+    // --- FIN DE LAS LÍNEAS A AÑADIR ---
+
+    testImplementation 'org.reactivecommons.utils:object-mapper:0.1.0'
+}
+
