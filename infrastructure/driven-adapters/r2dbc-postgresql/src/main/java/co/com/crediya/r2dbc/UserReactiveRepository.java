@@ -8,4 +8,5 @@ import reactor.core.publisher.Mono;
 // Heredamos de las interfaces de Spring Data
 public interface UserReactiveRepository extends ReactiveCrudRepository<UserEntity, Long>, ReactiveQueryByExampleExecutor<UserEntity> {
     Mono<Boolean> existsByEmail(String email);
+    Mono<Boolean> existsByIdentityDocument(Long identityDocument);
 }

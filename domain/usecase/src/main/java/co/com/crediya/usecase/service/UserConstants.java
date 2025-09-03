@@ -6,6 +6,7 @@ public final class UserConstants {
 
     private UserConstants() {
         // Clase de utilidad, no instanciable
+        throw new IllegalStateException("Utility class");
     }
 
     // Valores de negocio
@@ -14,6 +15,7 @@ public final class UserConstants {
     public static final String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
 
     // Nombres de campos para mensajes de error
+    public static final String FIELD_IDENTITY_DOCUMENT = "documento de identidad";
     public static final String FIELD_NAME = "nombres";
     public static final String FIELD_LAST_NAME = "apellidos";
     public static final String FIELD_EMAIL = "correo_electronico";

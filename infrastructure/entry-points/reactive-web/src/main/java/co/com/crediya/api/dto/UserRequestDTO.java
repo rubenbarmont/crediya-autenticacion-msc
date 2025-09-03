@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @Builder
 public class UserRequestDTO {
 
+    @NotNull(message = "El campo 'documento de identidad' es obligatorio.")
     private Long identityDocument;
 
     @NotBlank(message = "El campo 'nombres' es obligatorio.")

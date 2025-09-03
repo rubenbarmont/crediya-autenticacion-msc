@@ -39,6 +39,36 @@ class StandardUserValidatorTest {
     }
 
     @Test
+    void shouldFailWhenIdentityDocumentIsNull() {
+        // Arrange
+        User invalidUser = new UserTestDataBuilder().withIdentityDocument(null).build();
+
+        // Act
+        Mono<User> result = validator.validate(invalidUser);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof InvalidUserDataException
+                        && ((InvalidUserDataException) throwable).getErrors().get(0).contains(FIELD_IDENTITY_DOCUMENT))
+                .verify();
+    }
+
+    @Test
+    void shouldFailWhenNameIsBlank() {
+        // Arrange
+        User invalidUser = new UserTestDataBuilder().withName(" ").build();
+
+        // Act
+        Mono<User> result = validator.validate(invalidUser);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof InvalidUserDataException
+                        && ((InvalidUserDataException) throwable).getErrors().get(0).contains(FIELD_NAME))
+                .verify();
+    }
+
+    @Test
     void shouldFailWhenNameIsMissing() {
         // Arrange
         User invalidUser = new UserTestDataBuilder().withName(null).build();
@@ -55,18 +85,32 @@ class StandardUserValidatorTest {
     }
 
     @Test
-    void shouldFailWhenEmailFormatIsInvalid() {
+    void shouldFailWhenEmailIsInvalidFormat() {
         // Arrange
-        User invalidUser = new UserTestDataBuilder().withEmail("john.doe@invalid").build();
+        User invalidUser = new UserTestDataBuilder().withEmail("invalid-email").build();
 
         // Act
         Mono<User> result = validator.validate(invalidUser);
 
         // Assert
         StepVerifier.create(result)
-                .expectErrorMatches(throwable ->
-                        throwable instanceof InvalidUserDataException
-                                && ((InvalidUserDataException) throwable).getErrors().contains(ERROR_INVALID_EMAIL_FORMAT))
+                .expectErrorMatches(throwable -> throwable instanceof InvalidUserDataException
+                        && ((InvalidUserDataException) throwable).getErrors().contains(ERROR_INVALID_EMAIL_FORMAT))
+                .verify();
+    }
+
+    @Test
+    void shouldFailWhenSalaryIsBelowMinimum() {
+        // Arrange
+        User invalidUser = new UserTestDataBuilder().withBaseSalary(new BigDecimal("-1")).build();
+
+        // Act
+        Mono<User> result = validator.validate(invalidUser);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectErrorMatches(throwable -> throwable instanceof InvalidUserDataException
+                        && ((InvalidUserDataException) throwable).getErrors().contains(ERROR_SALARY_OUT_OF_RANGE))
                 .verify();
     }
 
@@ -83,6 +127,26 @@ class StandardUserValidatorTest {
                 .expectErrorMatches(throwable ->
                         throwable instanceof InvalidUserDataException
                                 && ((InvalidUserDataException) throwable).getErrors().contains(ERROR_SALARY_OUT_OF_RANGE))
+                .verify();
+    }
+
+    @Test
+    void shouldReturnMultipleErrors() {
+        // Arrange
+        User completelyInvalidUser = new User(); // Todos los campos son nulos
+
+        // Act
+        Mono<User> result = validator.validate(completelyInvalidUser);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectErrorSatisfies(throwable -> {
+                    assertTrue(throwable instanceof InvalidUserDataException);
+                    List<String> errors = ((InvalidUserDataException) throwable).getErrors();
+                    assertEquals(5, errors.size());
+                    assertTrue(errors.get(0).contains(FIELD_IDENTITY_DOCUMENT));
+                    assertTrue(errors.get(1).contains(FIELD_NAME));
+                })
                 .verify();
     }
 

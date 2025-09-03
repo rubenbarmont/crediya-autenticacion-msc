@@ -2,6 +2,7 @@ package co.com.crediya.usecase.command.registeruser;
 
 import co.com.crediya.model.user.User;
 import co.com.crediya.model.user.exceptions.EmailAlreadyExistsException;
+import co.com.crediya.model.user.exceptions.IdentityDocumentAlreadyExistsException;
 import co.com.crediya.model.user.exceptions.InvalidUserDataException;
 import co.com.crediya.model.user.gateways.UserRepository;
 import co.com.crediya.usecase.service.UserValidator;
@@ -33,32 +34,51 @@ class RegisterUserUseCaseTest {
     @Test
     void shouldRegisterUserSuccessfully() {
         // Arrange
-        User sampleUser = new UserTestDataBuilder().withEmail("jane.doe@example.com").build();
-        User savedUser = sampleUser.toBuilder().idUser(1L).build();
+        User userToRegister = new UserTestDataBuilder().build();
+        User userWithId = new UserTestDataBuilder().withId(1L).build();
 
-        when(userValidator.validate(any(User.class))).thenReturn(Mono.just(sampleUser));
-        when(userRepository.existsByEmail(sampleUser.getEmail())).thenReturn(Mono.just(false));
-        when(userRepository.save(any(User.class))).thenReturn(Mono.just(savedUser));
+        when(userValidator.validate(any(User.class))).thenReturn(Mono.just(userToRegister));
+        when(userRepository.existsByIdentityDocument(any(Long.class))).thenReturn(Mono.just(false));
+        when(userRepository.existsByEmail(any(String.class))).thenReturn(Mono.just(false));
+        when(userRepository.save(any(User.class))).thenReturn(Mono.just(userWithId));
 
         // Act
-        Mono<User> result = registerUserUseCase.execute(sampleUser);
+        Mono<User> result = registerUserUseCase.execute(userToRegister);
 
         // Assert
         StepVerifier.create(result)
-                .expectNextMatches(user -> user.getIdUser() == 1L && user.getName().equals("John"))
+                .expectNextMatches(savedUser -> savedUser.getIdUser() == 1L)
                 .verifyComplete();
     }
 
     @Test
-    void shouldFailWhenEmailAlreadyExists() {
+    void shouldFailWhenIdentityDocumentExists() {
         // Arrange
-        User sampleUser = new UserTestDataBuilder().withEmail("existing@example.com").build();
+        User userToRegister = new UserTestDataBuilder().build();
 
-        when(userValidator.validate(any(User.class))).thenReturn(Mono.just(sampleUser));
-        when(userRepository.existsByEmail(sampleUser.getEmail())).thenReturn(Mono.just(true));
+        when(userValidator.validate(any(User.class))).thenReturn(Mono.just(userToRegister));
+        when(userRepository.existsByIdentityDocument(any(Long.class))).thenReturn(Mono.just(true));
 
         // Act
-        Mono<User> result = registerUserUseCase.execute(sampleUser);
+        Mono<User> result = registerUserUseCase.execute(userToRegister);
+
+        // Assert
+        StepVerifier.create(result)
+                .expectError(IdentityDocumentAlreadyExistsException.class)
+                .verify();
+    }
+
+    @Test
+    void shouldFailWhenEmailExists() {
+        // Arrange
+        User userToRegister = new UserTestDataBuilder().build();
+
+        when(userValidator.validate(any(User.class))).thenReturn(Mono.just(userToRegister));
+        when(userRepository.existsByIdentityDocument(any(Long.class))).thenReturn(Mono.just(false));
+        when(userRepository.existsByEmail(any(String.class))).thenReturn(Mono.just(true));
+
+        // Act
+        Mono<User> result = registerUserUseCase.execute(userToRegister);
 
         // Assert
         StepVerifier.create(result)
