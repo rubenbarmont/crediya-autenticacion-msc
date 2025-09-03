@@ -44,7 +44,7 @@ public class UserRouter {
                     )
             ),
             @RouterOperation(
-                    path = "/api/v1/usuarios/existe-por-documento",
+                    path = "/api/v1/usuarios",
                     method = RequestMethod.GET,
                     beanClass = UserHandler.class,
                     beanMethod = "checkUserExistsByIdentityDocument",
@@ -63,6 +63,6 @@ public class UserRouter {
     })
     public RouterFunction<ServerResponse> userRouterFunction(UserHandler userHandler) {
         return route(POST("/api/v1/usuarios").and(accept(MediaType.APPLICATION_JSON)), userHandler::registerUser)
-                .andRoute(GET("/api/v1/usuarios/existe-por-documento"), userHandler::checkUserExistsByIdentityDocument);
+                .andRoute(GET("/api/v1/usuarios"), userHandler::checkUserExistsByIdentityDocument);
     }
 }

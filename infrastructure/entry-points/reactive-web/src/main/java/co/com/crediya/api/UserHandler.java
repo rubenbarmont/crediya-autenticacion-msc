@@ -58,12 +58,16 @@ public class UserHandler {
      * Maneja la petición para verificar si un usuario existe por su documento.
      */
     public Mono<ServerResponse> checkUserExistsByIdentityDocument(ServerRequest serverRequest) {
-        return Mono.just(serverRequest.queryParam("identityDocument").orElse("0"))
+        return Mono.justOrEmpty(serverRequest.queryParam("identityDocument"))
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("identityDocument es requerido")))
                 .map(Long::valueOf)
                 .flatMap(checkUserExistenceUseCase::byIdentityDocument)
                 .flatMap(exists -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
-                        .bodyValue(exists));
+                        .bodyValue(exists))
+                .onErrorResume(IllegalArgumentException.class, e ->
+                        ServerResponse.badRequest().contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(e.getMessage()));
     }
 
     /**
