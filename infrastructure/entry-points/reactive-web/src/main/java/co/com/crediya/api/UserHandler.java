@@ -6,8 +6,10 @@ import co.com.crediya.api.mapper.UserApiMapper;
 import co.com.crediya.model.user.exceptions.EmailAlreadyExistsException;
 import co.com.crediya.model.user.exceptions.IdentityDocumentAlreadyExistsException;
 import co.com.crediya.model.user.exceptions.InvalidUserDataException;
+import co.com.crediya.model.user.exceptions.UserNotFoundException;
 import co.com.crediya.usecase.command.registeruser.RegisterUserUseCase;
 import co.com.crediya.usecase.query.checkuser.CheckUserExistenceUseCase;
+import co.com.crediya.usecase.query.finduser.FindUserByIdentityDocumentUseCase;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,7 @@ public class UserHandler {
     private final CheckUserExistenceUseCase checkUserExistenceUseCase;
     private final UserApiMapper userApiMapper;
     private final TransactionalOperator transactionalOperator;
+    private final FindUserByIdentityDocumentUseCase findUserUseCase; // <-- Inyectar el nuevo caso de uso
 
     /**
      * Maneja la petición para registrar un nuevo usuario.
@@ -84,4 +87,24 @@ public class UserHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(errorDto);
     }
+
+    // --- NUEVO MÉTODO PARA EL ENDPOINT ---
+    public Mono<ServerResponse> findUserByIdentityDocument(ServerRequest serverRequest) {
+        // Extraemos el valor para poder loguearlo.
+        Long identityDocument = Long.valueOf(serverRequest.pathVariable("identityDocument"));
+
+        return Mono.just(identityDocument)
+                .doOnNext(doc -> log.info("Iniciando caso de uso para buscar usuario con documento: {}", doc)) // <-- LOG INICIO
+                .flatMap(findUserUseCase::execute)
+                .doOnSuccess(user -> log.info("Usuario encontrado exitosamente con ID: {}", user.getIdUser())) // <-- LOG ÉXITO
+                .flatMap(user -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(user))
+                // Ahora el .switchIfEmpty() ya no es necesario aquí, porque el UseCase se encarga de lanzar el error.
+                // En su lugar, manejamos ese error específico.
+                .doOnError(UserNotFoundException.class, e -> log.warn("Intento de búsqueda de usuario no existente: {}", e.getMessage())) // <-- LOG ERROR
+                .onErrorResume(UserNotFoundException.class, e ->
+                        buildErrorResponse(e, HttpStatus.NOT_FOUND, "USER_NOT_FOUND", serverRequest));
+    }
+
 }

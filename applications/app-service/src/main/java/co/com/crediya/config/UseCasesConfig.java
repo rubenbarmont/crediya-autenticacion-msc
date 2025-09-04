@@ -2,7 +2,8 @@ package co.com.crediya.config;
 
 import co.com.crediya.model.user.gateways.UserRepository;
 import co.com.crediya.usecase.command.registeruser.RegisterUserUseCase;
-import co.com.crediya.usecase.query.checkuser.CheckUserExistenceUseCase; // <-- Importar la clase
+import co.com.crediya.usecase.query.checkuser.CheckUserExistenceUseCase;
+import co.com.crediya.usecase.query.finduser.FindUserByIdentityDocumentUseCase;
 import co.com.crediya.usecase.service.StandardUserValidator;
 import co.com.crediya.usecase.service.UserValidator;
 import org.springframework.context.annotation.Bean;
@@ -11,14 +12,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class UseCasesConfig {
 
-        // 1. Creamos el bean del validador. Es una clase pura, sin dependencias.
         @Bean
         public UserValidator userValidator() {
                 return new StandardUserValidator();
         }
 
-        // 2. Creamos el bean del caso de uso.
-        // Spring ve que necesita un UserValidator y un UserRepository, y los inyecta.
         @Bean
         public RegisterUserUseCase registerUserUseCase(
                 UserValidator userValidator,
@@ -29,6 +27,14 @@ public class UseCasesConfig {
         @Bean
         public CheckUserExistenceUseCase checkUserExistenceUseCase(UserRepository userRepository) {
                 return new CheckUserExistenceUseCase(userRepository);
+        }
+
+        // --- NUEVO BEAN AÑADIDO ---
+        @Bean // <-- 2. DECLARAR EL BEAN
+        public FindUserByIdentityDocumentUseCase findUserByIdentityDocumentUseCase(UserRepository userRepository) {
+                // Spring ve que este caso de uso necesita un UserRepository,
+                // busca un bean de ese tipo y lo inyecta automáticamente.
+                return new FindUserByIdentityDocumentUseCase(userRepository);
         }
 
 }
