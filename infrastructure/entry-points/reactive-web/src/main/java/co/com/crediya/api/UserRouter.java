@@ -59,10 +59,30 @@ public class UserRouter {
                                     @ApiResponse(responseCode = "200", description = "Verificación exitosa.", content = @Content(schema = @Schema(implementation = Boolean.class)))
                             }
                     )
+            ),
+            // --- NUEVA OPERACIÓN SWAGGER PARA EL NUEVO ENDPOINT ---
+            @RouterOperation(
+                    path = "/api/v1/usuarios/by-identity-document/{identityDocument}", // La nueva ruta
+                    method = RequestMethod.GET,
+                    beanClass = UserHandler.class,
+                    beanMethod = "findUserByIdentityDocument",
+                    operation = @Operation(
+                            operationId = "findUserByIdentityDocument",
+                            summary = "Buscar un usuario por su documento de identidad",
+                            tags = {"Gestión de Usuarios"},
+                            parameters = {
+                                    @Parameter(in = ParameterIn.PATH, name = "identityDocument", required = true, description = "Número de documento del usuario a buscar.")
+                            },
+                            responses = {
+                                    @ApiResponse(responseCode = "200", description = "Usuario encontrado.", content = @Content(schema = @Schema(implementation = User.class))),
+                                    @ApiResponse(responseCode = "404", description = "Usuario no encontrado.")
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> userRouterFunction(UserHandler userHandler) {
         return route(POST("/api/v1/usuarios").and(accept(MediaType.APPLICATION_JSON)), userHandler::registerUser)
-                .andRoute(GET("/api/v1/usuarios"), userHandler::checkUserExistsByIdentityDocument);
+                .andRoute(GET("/api/v1/usuarios"), userHandler::checkUserExistsByIdentityDocument)
+                .andRoute(GET("/api/v1/usuarios/by-identity-document/{identityDocument}"), userHandler::findUserByIdentityDocument);
     }
 }

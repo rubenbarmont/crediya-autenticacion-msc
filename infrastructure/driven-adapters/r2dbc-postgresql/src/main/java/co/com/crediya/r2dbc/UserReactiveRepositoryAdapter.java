@@ -29,4 +29,12 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
     public Mono<Boolean> existsByIdentityDocument(Long identityDocument) {
         return repository.existsByIdentityDocument(identityDocument);
     }
+
+    // --- IMPLEMENTACIÓN DEL NUEVO MÉTODO ---
+    @Override
+    public Mono<User> findByIdentityDocument(Long identityDocument) {
+        return repository.findByIdentityDocument(identityDocument)
+                .map(this::toEntity); // 'toEntity' es el mapper que ya tienes en ReactiveAdapterOperations
+    }
+
 }
