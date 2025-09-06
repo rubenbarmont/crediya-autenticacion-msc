@@ -37,4 +37,11 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
                 .map(this::toEntity); // 'toEntity' es el mapper que ya tienes en ReactiveAdapterOperations
     }
 
+    // --- IMPLEMENTACIÓN DEL MÉTODO FALTANTE ---
+    @Override
+    public Mono<User> findByEmail(String email) {
+        return repository.findByEmail(email)
+                .map(this::toEntity); // Reutilizamos el helper 'toEntity'
+    }
+
 }

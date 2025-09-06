@@ -20,6 +20,10 @@ import org.springframework.transaction.reactive.TransactionalOperator;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+import co.com.crediya.api.dto.LoginRequestDTO;
+import co.com.crediya.api.dto.LoginResponseDTO;
+import co.com.crediya.model.user.exceptions.InvalidCredentialsException;
+import co.com.crediya.usecase.command.login.LoginUseCase;
 
 import java.time.LocalDateTime;
 
@@ -33,13 +37,16 @@ public class UserHandler {
     private final CheckUserExistenceUseCase checkUserExistenceUseCase;
     private final UserApiMapper userApiMapper;
     private final TransactionalOperator transactionalOperator;
-    private final FindUserByIdentityDocumentUseCase findUserUseCase; // <-- Inyectar el nuevo caso de uso
+    private final FindUserByIdentityDocumentUseCase findUserUseCase;
+    private final LoginUseCase loginUseCase;
 
     /**
      * Maneja la petición para registrar un nuevo usuario.
      */
     public Mono<ServerResponse> registerUser(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(UserRequestDTO.class)
+                // --- AÑADE ESTA LÍNEA PARA DEPURAR ---
+                .doOnNext(dto -> log.info("DTO recibido: {}", dto.toString()))
                 .map(userApiMapper::toDomain)
                 .doOnNext(user -> log.info("Iniciando caso de uso para registro de usuario con documento: {}", user.getIdentityDocument()))
                 .flatMap(registerUserUseCase::execute)
@@ -105,6 +112,19 @@ public class UserHandler {
                 .doOnError(UserNotFoundException.class, e -> log.warn("Intento de búsqueda de usuario no existente: {}", e.getMessage())) // <-- LOG ERROR
                 .onErrorResume(UserNotFoundException.class, e ->
                         buildErrorResponse(e, HttpStatus.NOT_FOUND, "USER_NOT_FOUND", serverRequest));
+    }
+
+    // --- NUEVO MÉTODO PARA MANEJAR EL LOGIN ---
+    public Mono<ServerResponse> login(ServerRequest serverRequest) {
+        return serverRequest.bodyToMono(LoginRequestDTO.class)
+                .doOnNext(dto -> log.info("Iniciando intento de login para el usuario: {}", dto.getEmail()))
+                .flatMap(dto -> loginUseCase.execute(dto.getEmail(), dto.getPassword()))
+                .flatMap(token -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new LoginResponseDTO(token)))
+                .doOnError(throwable -> log.warn("Fallo el intento de login: {}", throwable.getMessage()))
+                .onErrorResume(InvalidCredentialsException.class, e ->
+                        buildErrorResponse(e, HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", serverRequest));
     }
 
 }

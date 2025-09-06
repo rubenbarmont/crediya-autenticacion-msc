@@ -37,4 +37,6 @@ adapters:
     password: "password"
 
 
-
+jwt:
+  secret: "YTQ1M2Y4NTg2Zjc5MWI2YjYxNWI0ZDAxODkxZWU5MDIzMjI1Y2M2MzBlYjI4NGU4MGRjZmYxYjcwYjdlYjY5NQ=="
+  expirationInMinutes: 60

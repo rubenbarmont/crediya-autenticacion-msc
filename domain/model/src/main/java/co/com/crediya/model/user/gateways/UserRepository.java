@@ -11,4 +11,6 @@ public interface UserRepository {
 
     // --- NUEVO MÉTODO ---
     Mono<User> findByIdentityDocument(Long identityDocument);
+    // --- MÉTODO NECESARIO PARA EL LOGIN ---
+    Mono<User> findByEmail(String email);
 }

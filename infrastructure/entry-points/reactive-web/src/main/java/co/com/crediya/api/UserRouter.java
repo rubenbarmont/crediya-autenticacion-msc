@@ -17,6 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import co.com.crediya.api.dto.LoginRequestDTO;
+import co.com.crediya.api.dto.LoginResponseDTO;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.*;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
@@ -78,11 +80,29 @@ public class UserRouter {
                                     @ApiResponse(responseCode = "404", description = "Usuario no encontrado.")
                             }
                     )
+            ),
+            // --- NUEVA OPERACIÓN SWAGGER PARA EL LOGIN ---
+            @RouterOperation(
+                    path = "/api/v1/login",
+                    method = RequestMethod.POST,
+                    beanClass = UserHandler.class,
+                    beanMethod = "login",
+                    operation = @Operation(
+                            operationId = "login",
+                            summary = "Autenticar un usuario en el sistema",
+                            tags = {"Autenticación"},
+                            requestBody = @RequestBody(required = true, content = @Content(schema = @Schema(implementation = LoginRequestDTO.class))),
+                            responses = {
+                                    @ApiResponse(responseCode = "200", description = "Autenticación exitosa", content = @Content(schema = @Schema(implementation = LoginResponseDTO.class))),
+                                    @ApiResponse(responseCode = "401", description = "Credenciales inválidas.")
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> userRouterFunction(UserHandler userHandler) {
         return route(POST("/api/v1/usuarios").and(accept(MediaType.APPLICATION_JSON)), userHandler::registerUser)
                 .andRoute(GET("/api/v1/usuarios"), userHandler::checkUserExistsByIdentityDocument)
-                .andRoute(GET("/api/v1/usuarios/by-identity-document/{identityDocument}"), userHandler::findUserByIdentityDocument);
+                .andRoute(GET("/api/v1/usuarios/by-identity-document/{identityDocument}"), userHandler::findUserByIdentityDocument)
+                .andRoute(POST("/api/v1/login").and(accept(MediaType.APPLICATION_JSON)), userHandler::login);
     }
 }

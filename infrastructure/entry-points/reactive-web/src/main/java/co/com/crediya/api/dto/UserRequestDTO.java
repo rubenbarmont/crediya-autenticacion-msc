@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
+@ToString
 public class UserRequestDTO {
 
     @NotNull(message = "El campo 'documento de identidad' es obligatorio.")
@@ -33,4 +34,9 @@ public class UserRequestDTO {
     @DecimalMin(value = "0.0", message = "El salario base no puede ser negativo.")
     @DecimalMax(value = "15000000.0", message = "El salario base no puede exceder 15,000,000.")
     private BigDecimal baseSalary;
+
+    @NotBlank(message = "La contraseña es obligatoria") // <-- AÑADIR VALIDACIÓN
+    private String password; // <-- AÑADIR CAMPO
+
+    private Long idRol;
 }
