@@ -21,12 +21,10 @@ public class RegisterUserUseCase {
 
     public Mono<User> execute(User user) {
         String rawPassword = user.getPassword();
-
-        // 1. Buscamos el rol y lo guardamos en una variable Mono para reutilizarlo
         Mono<User> enrichedUserMono = rolRepository.findById(user.getIdRol())
                 .switchIfEmpty(Mono.error(new IllegalStateException("El rol con ID " + user.getIdRol() + " no fue encontrado.")))
                 .map(rol -> {
-                    user.setRol(rol); // Asignamos el objeto Rol completo al usuario
+                    user.setRol(rol);
                     return user;
                 });
 
@@ -40,11 +38,7 @@ public class RegisterUserUseCase {
                             return validUser;
                         }))
                 .flatMap(userRepository::save)
-                // 2. Combinamos el usuario guardado con nuestro usuario enriquecido
                 .zipWith(enrichedUserMono, (savedUser, originalEnrichedUser) -> {
-                    // 'savedUser' viene de la BD (con el idUser correcto, pero rol=null)
-                    // 'originalEnrichedUser' es el que tenemos en memoria con el objeto Rol.
-                    // Le ponemos el objeto Rol al usuario guardado antes de devolverlo.
                     savedUser.setRol(originalEnrichedUser.getRol());
                     return savedUser;
                 });

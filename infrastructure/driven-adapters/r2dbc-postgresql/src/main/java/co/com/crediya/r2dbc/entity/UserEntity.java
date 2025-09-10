@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @Setter
 @Builder
 
-public class UserEntity { // <-- Nombre corregido
+public class UserEntity {
 
     @Id
     @Column("id_user")
@@ -29,6 +29,6 @@ public class UserEntity { // <-- Nombre corregido
     private String email;
     private String password;
     private BigDecimal baseSalary;
-    @Column("id_rol") // <-- AÑADIR MAPEADO
+    @Column("id_rol")
     private Long idRol;
 }

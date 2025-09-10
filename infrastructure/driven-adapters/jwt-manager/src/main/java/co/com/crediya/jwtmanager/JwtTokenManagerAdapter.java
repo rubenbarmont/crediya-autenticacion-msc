@@ -31,15 +31,13 @@ public class JwtTokenManagerAdapter implements TokenManager {
             Instant expiration = now.plus(properties.getExpirationInMinutes(), ChronoUnit.MINUTES);
             SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(properties.getSecret()));
 
-            // Creamos los claims (la información que irá dentro del token)
             Map<String, Object> claims = Map.of(
                     "userId", user.getIdUser(),
-                    // Verificamos que el rol no sea nulo antes de añadirlo
                     "rol", (user.getRol() != null && user.getRol().getName() != null) ? user.getRol().getName() : ""
             );
 
             return Jwts.builder()
-                    .setClaims(claims) // <-- Usamos el mapa de claims
+                    .setClaims(claims)
                     .setSubject(user.getEmail())
                     .setIssuedAt(Date.from(now))
                     .setExpiration(Date.from(expiration))
@@ -48,19 +46,17 @@ public class JwtTokenManagerAdapter implements TokenManager {
         });
     }
 
-    // --- NUEVO MÉTODO DE VALIDACIÓN ---
     @Override
-    public Mono<TokenDetails> validate(String token) { // <-- CAMBIAR TIPO DE RETORNO
+    public Mono<TokenDetails> validate(String token) {
         return Mono.fromCallable(() -> {
             SecretKey secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(properties.getSecret()));
 
-            Claims claims = Jwts.parserBuilder() // Parseamos al objeto 'Claims' de la librería
+            Claims claims = Jwts.parserBuilder()
                     .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
 
-            // Mapeamos los datos de 'Claims' a nuestro objeto de dominio 'TokenDetails'
             return TokenDetails.builder()
                     .email(claims.getSubject())
                     .userId(claims.get("userId", String.class))

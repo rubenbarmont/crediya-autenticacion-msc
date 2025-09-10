@@ -62,9 +62,8 @@ public class UserRouter {
                             }
                     )
             ),
-            // --- NUEVA OPERACIÓN SWAGGER PARA EL NUEVO ENDPOINT ---
             @RouterOperation(
-                    path = "/api/v1/usuarios/by-identity-document/{identityDocument}", // La nueva ruta
+                    path = "/api/v1/usuarios/by-identity-document/{identityDocument}",
                     method = RequestMethod.GET,
                     beanClass = UserHandler.class,
                     beanMethod = "findUserByIdentityDocument",
@@ -81,7 +80,6 @@ public class UserRouter {
                             }
                     )
             ),
-            // --- NUEVA OPERACIÓN SWAGGER PARA EL LOGIN ---
             @RouterOperation(
                     path = "/api/v1/login",
                     method = RequestMethod.POST,
@@ -98,7 +96,6 @@ public class UserRouter {
                             }
                     )
             ),
-            // --- NUEVA DOCUMENTACIÓN SWAGGER ---
             @RouterOperation(
                     path = "/api/v1/usuarios/{id}",
                     method = RequestMethod.GET,
@@ -123,7 +120,6 @@ public class UserRouter {
                 .andRoute(GET("/api/v1/usuarios"), userHandler::checkUserExistsByIdentityDocument)
                 .andRoute(GET("/api/v1/usuarios/by-identity-document/{identityDocument}"), userHandler::findUserByIdentityDocument)
                 .andRoute(POST("/api/v1/login").and(accept(MediaType.APPLICATION_JSON)), userHandler::login)
-                // --- NUEVA RUTA ---
                 .andRoute(GET("/api/v1/usuarios/{id}"), userHandler::findUserById);
     }
 }

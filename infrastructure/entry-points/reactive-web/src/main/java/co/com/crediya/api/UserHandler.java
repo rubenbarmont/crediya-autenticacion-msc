@@ -97,19 +97,16 @@ public class UserHandler {
     }
 
     public Mono<ServerResponse> findUserByIdentityDocument(ServerRequest serverRequest) {
-        // Extraemos el valor para poder loguearlo.
         Long identityDocument = Long.valueOf(serverRequest.pathVariable("identityDocument"));
 
         return Mono.just(identityDocument)
-                .doOnNext(doc -> log.info("Iniciando caso de uso para buscar usuario con documento: {}", doc)) // <-- LOG INICIO
+                .doOnNext(doc -> log.info("Iniciando caso de uso para buscar usuario con documento: {}", doc))
                 .flatMap(findUserUseCase::execute)
-                .doOnSuccess(user -> log.info("Usuario encontrado exitosamente con ID: {}", user.getIdUser())) // <-- LOG ÉXITO
+                .doOnSuccess(user -> log.info("Usuario encontrado exitosamente con ID: {}", user.getIdUser()))
                 .flatMap(user -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(user))
-                // Ahora el .switchIfEmpty() ya no es necesario aquí, porque el UseCase se encarga de lanzar el error.
-                // En su lugar, manejamos ese error específico.
-                .doOnError(UserNotFoundException.class, e -> log.warn("Intento de búsqueda de usuario no existente: {}", e.getMessage())) // <-- LOG ERROR
+                .doOnError(UserNotFoundException.class, e -> log.warn("Intento de búsqueda de usuario no existente: {}", e.getMessage()))
                 .onErrorResume(UserNotFoundException.class, e ->
                         buildErrorResponse(e, HttpStatus.NOT_FOUND, "USER_NOT_FOUND", serverRequest));
     }
@@ -126,7 +123,6 @@ public class UserHandler {
                         buildErrorResponse(e, HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", serverRequest));
     }
 
-    // --- NUEVO MÉTODO PARA MANEJAR LA RUTA ---
     public Mono<ServerResponse> findUserById(ServerRequest serverRequest) {
         Long id = Long.valueOf(serverRequest.pathVariable("id"));
 

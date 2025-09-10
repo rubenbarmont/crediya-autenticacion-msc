@@ -19,7 +19,6 @@ import org.springframework.security.oauth2.server.resource.authentication.Reacti
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import javax.crypto.SecretKey;
@@ -52,7 +51,7 @@ public class SecurityConfig {
 
         ReactiveJwtAuthenticationConverter jwtAuthenticationConverter = new ReactiveJwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwt ->
-                Flux.fromIterable(grantedAuthoritiesConverter.convert(jwt)) // ✅ Aquí usamos Flux
+                Flux.fromIterable(grantedAuthoritiesConverter.convert(jwt))
         );
 
         return jwtAuthenticationConverter;
@@ -65,7 +64,6 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchanges -> exchanges
                         .pathMatchers(HttpMethod.POST, "/api/v1/login").permitAll()
-                        // La regla de negocio final y correcta
                         .pathMatchers(HttpMethod.POST, "/api/v1/usuarios").hasAnyRole("ADMIN", "ASESOR")
                         .anyExchange().authenticated()
                 )

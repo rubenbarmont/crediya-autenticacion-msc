@@ -24,8 +24,8 @@ public class UseCasesConfig {
                 UserValidator userValidator,
                 UserRepository userRepository,
                 PasswordEncoderGateway passwordEncoderGateway,
-                RolRepository rolRepository) { // <-- CAMBIAR LA DEPENDENCIA
-                return new RegisterUserUseCase(userValidator, userRepository, passwordEncoderGateway, rolRepository); // <-- PASARLA AL CONSTRUCTOR
+                RolRepository rolRepository) {
+                return new RegisterUserUseCase(userValidator, userRepository, passwordEncoderGateway, rolRepository);
         }
 
         @Bean
@@ -33,22 +33,18 @@ public class UseCasesConfig {
                 return new CheckUserExistenceUseCase(userRepository);
         }
 
-        // --- NUEVO BEAN AÑADIDO ---
-        @Bean // <-- 2. DECLARAR EL BEAN
+        @Bean
         public FindUserByIdentityDocumentUseCase findUserByIdentityDocumentUseCase(UserRepository userRepository) {
-                // Spring ve que este caso de uso necesita un UserRepository,
-                // busca un bean de ese tipo y lo inyecta automáticamente.
                 return new FindUserByIdentityDocumentUseCase(userRepository);
         }
 
-        // --- NUEVO BEAN PARA EL LOGINUSECASE ---
         @Bean
         public LoginUseCase loginUseCase(
                 UserRepository userRepository,
                 PasswordVerifier passwordVerifier,
                 TokenManager tokenManager,
-                RolRepository rolRepository) { // <-- AÑADIR RolRepository
-                return new LoginUseCase(userRepository, passwordVerifier, tokenManager, rolRepository); // <-- PASARLO AL CONSTRUCTOR
+                RolRepository rolRepository) {
+                return new LoginUseCase(userRepository, passwordVerifier, tokenManager, rolRepository);
         }
 
         @Bean

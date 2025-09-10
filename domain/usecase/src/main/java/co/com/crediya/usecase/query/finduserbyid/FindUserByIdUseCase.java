@@ -13,8 +13,6 @@ public class FindUserByIdUseCase {
 
     public Mono<User> execute(Long idUser) {
         return userRepository.findById(idUser)
-                // Usamos la misma excepción, pero con un mensaje diferente.
-                // Para esto, necesitaremos añadir un nuevo constructor a UserNotFoundException.
                 .switchIfEmpty(Mono.error(new UserNotFoundException(idUser)));
     }
 }

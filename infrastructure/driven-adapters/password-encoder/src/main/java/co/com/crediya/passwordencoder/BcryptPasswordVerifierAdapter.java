@@ -9,7 +9,6 @@ import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
-// AHORA IMPLEMENTA AMBAS INTERFACES
 public class BcryptPasswordVerifierAdapter implements PasswordVerifier, PasswordEncoderGateway {
 
     private final PasswordEncoder passwordEncoder;

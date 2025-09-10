@@ -16,7 +16,7 @@ public interface UserApiMapper {
      * @param dto El objeto con los datos de entrada de la API.
      * @return Un objeto User del dominio.
      */
-    @Mapping(target = "idUser", ignore = true) // idUser se genera en la base de datos, lo ignoramos.
+    @Mapping(target = "idUser", ignore = true)
     @Mapping(target = "rol", ignore = true)
     @Mapping(target = "identityDocument", source = "identityDocument")
     @Mapping(target = "name", source = "name")

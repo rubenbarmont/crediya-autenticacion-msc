@@ -35,8 +35,8 @@ public class UserRequestDTO {
     @DecimalMax(value = "15000000.0", message = "El salario base no puede exceder 15,000,000.")
     private BigDecimal baseSalary;
 
-    @NotBlank(message = "La contraseña es obligatoria") // <-- AÑADIR VALIDACIÓN
-    private String password; // <-- AÑADIR CAMPO
+    @NotBlank(message = "La contraseña es obligatoria")
+    private String password;
 
     private Long idRol;
 }

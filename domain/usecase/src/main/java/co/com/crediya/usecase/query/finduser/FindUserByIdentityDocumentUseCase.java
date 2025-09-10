@@ -13,7 +13,6 @@ public class FindUserByIdentityDocumentUseCase {
 
     public Mono<User> execute(Long identityDocument) {
         return userRepository.findByIdentityDocument(identityDocument)
-                // Si el Mono que viene del repositorio está vacío, lanza nuestra excepción de negocio.
                 .switchIfEmpty(Mono.error(new UserNotFoundException(identityDocument)));
     }
 }
