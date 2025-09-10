@@ -1,3 +1,4 @@
+/*
 package co.com.crediya.security;
 
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,7 @@ public class JwtAuthenticationConverter implements ServerAuthenticationConverter
         return Mono.justOrEmpty(exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION))
                 .filter(header -> header.startsWith(BEARER_PREFIX))
                 .map(header -> header.substring(BEARER_PREFIX.length()))
-                .map(token -> new UsernamePasswordAuthenticationToken(token, token)); // Contenedor temporal del token
+                .map(token -> new UsernamePasswordAuthenticationToken(token, token));
     }
 }
+*/

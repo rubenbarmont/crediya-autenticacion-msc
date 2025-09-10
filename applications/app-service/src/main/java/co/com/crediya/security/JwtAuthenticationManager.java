@@ -1,3 +1,4 @@
+/*
 package co.com.crediya.security;
 
 import co.com.crediya.usecase.service.TokenManager;
@@ -22,20 +23,18 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
     @Override
     public Mono<Authentication> authenticate(Authentication authentication) {
         String token = authentication.getPrincipal().toString();
-
         return tokenManager.validate(token)
-                .map(tokenDetails -> { // <-- Ahora recibimos un TokenDetails
-                    String email = tokenDetails.getEmail();
+                .map(tokenDetails -> {
                     String role = tokenDetails.getRole();
-
                     List<SimpleGrantedAuthority> authorities = Collections.singletonList(
-                            new SimpleGrantedAuthority("ROLE_" + role)
+                        new SimpleGrantedAuthority("ROLE_" + role)
                     );
-
-                    return new UsernamePasswordAuthenticationToken(email, null, authorities);
+                    return new UsernamePasswordAuthenticationToken(
+                            tokenDetails.getEmail(),
+                            null,
+                            authorities
+                    );
                 });
     }
-
-
-
 }
+*/

@@ -22,8 +22,9 @@ public class UseCasesConfig {
         public RegisterUserUseCase registerUserUseCase(
                 UserValidator userValidator,
                 UserRepository userRepository,
-                PasswordEncoderGateway passwordEncoderGateway) { // <-- CAMBIAR LA DEPENDENCIA
-                return new RegisterUserUseCase(userValidator, userRepository, passwordEncoderGateway); // <-- PASARLA AL CONSTRUCTOR
+                PasswordEncoderGateway passwordEncoderGateway,
+                RolRepository rolRepository) { // <-- CAMBIAR LA DEPENDENCIA
+                return new RegisterUserUseCase(userValidator, userRepository, passwordEncoderGateway, rolRepository); // <-- PASARLA AL CONSTRUCTOR
         }
 
         @Bean

@@ -10,5 +10,5 @@ import lombok.*;
 public class Rol {
     private Long idRol;
     private String name;
-    private String descripcion;
+    private String description;
 }

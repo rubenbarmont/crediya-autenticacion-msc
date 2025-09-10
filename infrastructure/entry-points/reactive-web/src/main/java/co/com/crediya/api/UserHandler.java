@@ -45,7 +45,6 @@ public class UserHandler {
      */
     public Mono<ServerResponse> registerUser(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(UserRequestDTO.class)
-                // --- AÑADE ESTA LÍNEA PARA DEPURAR ---
                 .doOnNext(dto -> log.info("DTO recibido: {}", dto.toString()))
                 .map(userApiMapper::toDomain)
                 .doOnNext(user -> log.info("Iniciando caso de uso para registro de usuario con documento: {}", user.getIdentityDocument()))
@@ -95,7 +94,6 @@ public class UserHandler {
                 .bodyValue(errorDto);
     }
 
-    // --- NUEVO MÉTODO PARA EL ENDPOINT ---
     public Mono<ServerResponse> findUserByIdentityDocument(ServerRequest serverRequest) {
         // Extraemos el valor para poder loguearlo.
         Long identityDocument = Long.valueOf(serverRequest.pathVariable("identityDocument"));
@@ -114,7 +112,6 @@ public class UserHandler {
                         buildErrorResponse(e, HttpStatus.NOT_FOUND, "USER_NOT_FOUND", serverRequest));
     }
 
-    // --- NUEVO MÉTODO PARA MANEJAR EL LOGIN ---
     public Mono<ServerResponse> login(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(LoginRequestDTO.class)
                 .doOnNext(dto -> log.info("Iniciando intento de login para el usuario: {}", dto.getEmail()))
