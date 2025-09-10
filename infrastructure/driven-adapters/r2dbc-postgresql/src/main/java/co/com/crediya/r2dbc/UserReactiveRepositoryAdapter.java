@@ -44,4 +44,12 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
                 .map(this::toEntity); // Reutilizamos el helper 'toEntity'
     }
 
+    // --- IMPLEMENTACIÓN DEL NUEVO MÉTODO DEL DOMINIO ---
+    @Override
+    public Mono<User> findById(Long idUser) {
+        // La interfaz 'repository' ya tiene un método findById gracias a ReactiveCrudRepository
+        return repository.findById(idUser)
+                .map(this::toEntity);
+    }
+
 }

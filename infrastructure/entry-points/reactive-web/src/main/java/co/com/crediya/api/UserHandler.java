@@ -10,6 +10,7 @@ import co.com.crediya.model.user.exceptions.UserNotFoundException;
 import co.com.crediya.usecase.command.registeruser.RegisterUserUseCase;
 import co.com.crediya.usecase.query.checkuser.CheckUserExistenceUseCase;
 import co.com.crediya.usecase.query.finduser.FindUserByIdentityDocumentUseCase;
+import co.com.crediya.usecase.query.finduserbyid.FindUserByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,7 @@ public class UserHandler {
     private final TransactionalOperator transactionalOperator;
     private final FindUserByIdentityDocumentUseCase findUserUseCase;
     private final LoginUseCase loginUseCase;
+    private final FindUserByIdUseCase findUserByIdUseCase;
 
     /**
      * Maneja la petición para registrar un nuevo usuario.
@@ -122,6 +124,21 @@ public class UserHandler {
                 .doOnError(throwable -> log.warn("Fallo el intento de login: {}", throwable.getMessage()))
                 .onErrorResume(InvalidCredentialsException.class, e ->
                         buildErrorResponse(e, HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", serverRequest));
+    }
+
+    // --- NUEVO MÉTODO PARA MANEJAR LA RUTA ---
+    public Mono<ServerResponse> findUserById(ServerRequest serverRequest) {
+        Long id = Long.valueOf(serverRequest.pathVariable("id"));
+
+        return Mono.just(id)
+                .doOnNext(userId -> log.info("Iniciando caso de uso para buscar usuario con ID: {}", userId))
+                .flatMap(findUserByIdUseCase::execute)
+                .doOnSuccess(user -> log.info("Usuario encontrado exitosamente con email: {}", user.getEmail()))
+                .flatMap(user -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(user))
+                .onErrorResume(UserNotFoundException.class, e ->
+                        buildErrorResponse(e, HttpStatus.NOT_FOUND, "USER_NOT_FOUND_BY_ID", serverRequest));
     }
 
 }

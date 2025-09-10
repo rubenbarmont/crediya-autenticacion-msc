@@ -5,6 +5,7 @@ import co.com.crediya.model.user.gateways.UserRepository;
 import co.com.crediya.usecase.command.registeruser.RegisterUserUseCase;
 import co.com.crediya.usecase.query.checkuser.CheckUserExistenceUseCase;
 import co.com.crediya.usecase.query.finduser.FindUserByIdentityDocumentUseCase;
+import co.com.crediya.usecase.query.finduserbyid.FindUserByIdUseCase;
 import co.com.crediya.usecase.service.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,6 +49,11 @@ public class UseCasesConfig {
                 TokenManager tokenManager,
                 RolRepository rolRepository) { // <-- AÑADIR RolRepository
                 return new LoginUseCase(userRepository, passwordVerifier, tokenManager, rolRepository); // <-- PASARLO AL CONSTRUCTOR
+        }
+
+        @Bean
+        public FindUserByIdUseCase findUserByIdUseCase(UserRepository userRepository) {
+                return new FindUserByIdUseCase(userRepository);
         }
 
 }

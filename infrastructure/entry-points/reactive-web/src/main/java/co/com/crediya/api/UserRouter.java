@@ -97,12 +97,33 @@ public class UserRouter {
                                     @ApiResponse(responseCode = "401", description = "Credenciales inválidas.")
                             }
                     )
+            ),
+            // --- NUEVA DOCUMENTACIÓN SWAGGER ---
+            @RouterOperation(
+                    path = "/api/v1/usuarios/{id}",
+                    method = RequestMethod.GET,
+                    beanClass = UserHandler.class,
+                    beanMethod = "findUserById",
+                    operation = @Operation(
+                            operationId = "findUserById",
+                            summary = "Buscar un usuario por su ID de sistema",
+                            tags = {"Gestión de Usuarios"},
+                            parameters = {
+                                    @Parameter(in = ParameterIn.PATH, name = "id", required = true, description = "ID del usuario a buscar.")
+                            },
+                            responses = {
+                                    @ApiResponse(responseCode = "200", description = "Usuario encontrado.", content = @Content(schema = @Schema(implementation = User.class))),
+                                    @ApiResponse(responseCode = "404", description = "Usuario no encontrado.")
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> userRouterFunction(UserHandler userHandler) {
         return route(POST("/api/v1/usuarios").and(accept(MediaType.APPLICATION_JSON)), userHandler::registerUser)
                 .andRoute(GET("/api/v1/usuarios"), userHandler::checkUserExistsByIdentityDocument)
                 .andRoute(GET("/api/v1/usuarios/by-identity-document/{identityDocument}"), userHandler::findUserByIdentityDocument)
-                .andRoute(POST("/api/v1/login").and(accept(MediaType.APPLICATION_JSON)), userHandler::login);
+                .andRoute(POST("/api/v1/login").and(accept(MediaType.APPLICATION_JSON)), userHandler::login)
+                // --- NUEVA RUTA ---
+                .andRoute(GET("/api/v1/usuarios/{id}"), userHandler::findUserById);
     }
 }
