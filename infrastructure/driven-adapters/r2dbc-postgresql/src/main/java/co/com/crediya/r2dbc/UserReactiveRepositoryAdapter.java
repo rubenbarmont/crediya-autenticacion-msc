@@ -30,11 +30,22 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
         return repository.existsByIdentityDocument(identityDocument);
     }
 
-    // --- IMPLEMENTACIÓN DEL NUEVO MÉTODO ---
     @Override
     public Mono<User> findByIdentityDocument(Long identityDocument) {
         return repository.findByIdentityDocument(identityDocument)
-                .map(this::toEntity); // 'toEntity' es el mapper que ya tienes en ReactiveAdapterOperations
+                .map(this::toEntity);
+    }
+
+    @Override
+    public Mono<User> findByEmail(String email) {
+        return repository.findByEmail(email)
+                .map(this::toEntity);
+    }
+
+    @Override
+    public Mono<User> findById(Long idUser) {
+        return repository.findById(idUser)
+                .map(this::toEntity);
     }
 
 }

@@ -10,6 +10,7 @@ import co.com.crediya.model.user.exceptions.UserNotFoundException;
 import co.com.crediya.usecase.command.registeruser.RegisterUserUseCase;
 import co.com.crediya.usecase.query.checkuser.CheckUserExistenceUseCase;
 import co.com.crediya.usecase.query.finduser.FindUserByIdentityDocumentUseCase;
+import co.com.crediya.usecase.query.finduserbyid.FindUserByIdUseCase;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,10 @@ import org.springframework.transaction.reactive.TransactionalOperator;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
+import co.com.crediya.api.dto.LoginRequestDTO;
+import co.com.crediya.api.dto.LoginResponseDTO;
+import co.com.crediya.model.user.exceptions.InvalidCredentialsException;
+import co.com.crediya.usecase.command.login.LoginUseCase;
 
 import java.time.LocalDateTime;
 
@@ -33,13 +38,16 @@ public class UserHandler {
     private final CheckUserExistenceUseCase checkUserExistenceUseCase;
     private final UserApiMapper userApiMapper;
     private final TransactionalOperator transactionalOperator;
-    private final FindUserByIdentityDocumentUseCase findUserUseCase; // <-- Inyectar el nuevo caso de uso
+    private final FindUserByIdentityDocumentUseCase findUserUseCase;
+    private final LoginUseCase loginUseCase;
+    private final FindUserByIdUseCase findUserByIdUseCase;
 
     /**
      * Maneja la petición para registrar un nuevo usuario.
      */
     public Mono<ServerResponse> registerUser(ServerRequest serverRequest) {
         return serverRequest.bodyToMono(UserRequestDTO.class)
+                .doOnNext(dto -> log.info("DTO recibido: {}", dto.toString()))
                 .map(userApiMapper::toDomain)
                 .doOnNext(user -> log.info("Iniciando caso de uso para registro de usuario con documento: {}", user.getIdentityDocument()))
                 .flatMap(registerUserUseCase::execute)
@@ -88,23 +96,45 @@ public class UserHandler {
                 .bodyValue(errorDto);
     }
 
-    // --- NUEVO MÉTODO PARA EL ENDPOINT ---
     public Mono<ServerResponse> findUserByIdentityDocument(ServerRequest serverRequest) {
-        // Extraemos el valor para poder loguearlo.
         Long identityDocument = Long.valueOf(serverRequest.pathVariable("identityDocument"));
 
         return Mono.just(identityDocument)
-                .doOnNext(doc -> log.info("Iniciando caso de uso para buscar usuario con documento: {}", doc)) // <-- LOG INICIO
+                .doOnNext(doc -> log.info("Iniciando caso de uso para buscar usuario con documento: {}", doc))
                 .flatMap(findUserUseCase::execute)
-                .doOnSuccess(user -> log.info("Usuario encontrado exitosamente con ID: {}", user.getIdUser())) // <-- LOG ÉXITO
+                .doOnSuccess(user -> log.info("Usuario encontrado exitosamente con ID: {}", user.getIdUser()))
                 .flatMap(user -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(user))
-                // Ahora el .switchIfEmpty() ya no es necesario aquí, porque el UseCase se encarga de lanzar el error.
-                // En su lugar, manejamos ese error específico.
-                .doOnError(UserNotFoundException.class, e -> log.warn("Intento de búsqueda de usuario no existente: {}", e.getMessage())) // <-- LOG ERROR
+                .doOnError(UserNotFoundException.class, e -> log.warn("Intento de búsqueda de usuario no existente: {}", e.getMessage()))
                 .onErrorResume(UserNotFoundException.class, e ->
                         buildErrorResponse(e, HttpStatus.NOT_FOUND, "USER_NOT_FOUND", serverRequest));
+    }
+
+    public Mono<ServerResponse> login(ServerRequest serverRequest) {
+        return serverRequest.bodyToMono(LoginRequestDTO.class)
+                .doOnNext(dto -> log.info("Iniciando intento de login para el usuario: {}", dto.getEmail()))
+                .flatMap(dto -> loginUseCase.execute(dto.getEmail(), dto.getPassword()))
+                .flatMap(token -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(new LoginResponseDTO(token)))
+                .doOnError(throwable -> log.warn("Fallo el intento de login: {}", throwable.getMessage()))
+                .onErrorResume(InvalidCredentialsException.class, e ->
+                        buildErrorResponse(e, HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", serverRequest));
+    }
+
+    public Mono<ServerResponse> findUserById(ServerRequest serverRequest) {
+        Long id = Long.valueOf(serverRequest.pathVariable("id"));
+
+        return Mono.just(id)
+                .doOnNext(userId -> log.info("Iniciando caso de uso para buscar usuario con ID: {}", userId))
+                .flatMap(findUserByIdUseCase::execute)
+                .doOnSuccess(user -> log.info("Usuario encontrado exitosamente con email: {}", user.getEmail()))
+                .flatMap(user -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(user))
+                .onErrorResume(UserNotFoundException.class, e ->
+                        buildErrorResponse(e, HttpStatus.NOT_FOUND, "USER_NOT_FOUND_BY_ID", serverRequest));
     }
 
 }

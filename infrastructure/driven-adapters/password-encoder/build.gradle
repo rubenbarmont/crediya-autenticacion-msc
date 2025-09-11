@@ -1,0 +1,10 @@
+dependencies {
+    implementation project(':model')
+    implementation 'org.springframework:spring-context'
+
+    // Permite que este módulo vea las interfaces del dominio
+    implementation project(':usecase')
+
+    // Dependencia de Spring Security Crypto para PasswordEncoder
+    implementation 'org.springframework.security:spring-security-crypto'
+}

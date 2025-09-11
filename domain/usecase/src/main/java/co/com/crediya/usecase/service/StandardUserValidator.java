@@ -38,7 +38,6 @@ public class StandardUserValidator implements UserValidator {
         if (Objects.isNull(identityDocument)) {
             return Optional.of(String.format(ERROR_FIELD_REQUIRED, FIELD_IDENTITY_DOCUMENT));
         }
-        // Aquí se podrían añadir más validaciones en el futuro (ej. que sea un número positivo).
         return Optional.empty();
     }
 

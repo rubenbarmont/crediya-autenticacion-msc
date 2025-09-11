@@ -1,12 +1,24 @@
 apply plugin: 'org.springframework.boot'
 
 dependencies {
+	implementation project(':password-encoder')
+	implementation project(':jwt-manager')
 	implementation project(':reactive-web')
 	implementation 'org.reactivecommons.utils:object-mapper:0.1.0'
 	implementation project(':r2dbc-postgresql')
+    implementation project(':jwt-manager') // <-- AÑADIR
+    implementation project(':password-encoder') // <-- AÑADIR
     implementation project(':model')
     implementation project(':usecase')
     implementation 'org.springframework.boot:spring-boot-starter'
+    // Para la seguridad y el manejo de contraseñas (BCrypt)
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    // --- AÑADE ESTA LÍNEA ---
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    // Para la creación y manejo de JSON Web Tokens (JWT)
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
     testImplementation 'com.tngtech.archunit:archunit:1.4.1'
     testImplementation 'com.fasterxml.jackson.core:jackson-databind'

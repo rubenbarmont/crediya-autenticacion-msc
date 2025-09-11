@@ -1,13 +1,15 @@
 package co.com.crediya.config;
 
+import co.com.crediya.model.rol.gateways.RolRepository;
 import co.com.crediya.model.user.gateways.UserRepository;
 import co.com.crediya.usecase.command.registeruser.RegisterUserUseCase;
 import co.com.crediya.usecase.query.checkuser.CheckUserExistenceUseCase;
 import co.com.crediya.usecase.query.finduser.FindUserByIdentityDocumentUseCase;
-import co.com.crediya.usecase.service.StandardUserValidator;
-import co.com.crediya.usecase.service.UserValidator;
+import co.com.crediya.usecase.query.finduserbyid.FindUserByIdUseCase;
+import co.com.crediya.usecase.service.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import co.com.crediya.usecase.command.login.LoginUseCase;
 
 @Configuration
 public class UseCasesConfig {
@@ -20,8 +22,10 @@ public class UseCasesConfig {
         @Bean
         public RegisterUserUseCase registerUserUseCase(
                 UserValidator userValidator,
-                UserRepository userRepository) {
-                return new RegisterUserUseCase(userValidator, userRepository);
+                UserRepository userRepository,
+                PasswordEncoderGateway passwordEncoderGateway,
+                RolRepository rolRepository) {
+                return new RegisterUserUseCase(userValidator, userRepository, passwordEncoderGateway, rolRepository);
         }
 
         @Bean
@@ -29,12 +33,23 @@ public class UseCasesConfig {
                 return new CheckUserExistenceUseCase(userRepository);
         }
 
-        // --- NUEVO BEAN AÑADIDO ---
-        @Bean // <-- 2. DECLARAR EL BEAN
+        @Bean
         public FindUserByIdentityDocumentUseCase findUserByIdentityDocumentUseCase(UserRepository userRepository) {
-                // Spring ve que este caso de uso necesita un UserRepository,
-                // busca un bean de ese tipo y lo inyecta automáticamente.
                 return new FindUserByIdentityDocumentUseCase(userRepository);
+        }
+
+        @Bean
+        public LoginUseCase loginUseCase(
+                UserRepository userRepository,
+                PasswordVerifier passwordVerifier,
+                TokenManager tokenManager,
+                RolRepository rolRepository) {
+                return new LoginUseCase(userRepository, passwordVerifier, tokenManager, rolRepository);
+        }
+
+        @Bean
+        public FindUserByIdUseCase findUserByIdUseCase(UserRepository userRepository) {
+                return new FindUserByIdUseCase(userRepository);
         }
 
 }

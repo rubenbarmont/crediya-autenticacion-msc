@@ -5,38 +5,29 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class UserTestDataBuilder {
-
     private Long idUser;
     private Long identityDocument;
     private String name;
-    private String lastName;
-    private LocalDate birthDate;
-    private String address;
-    private String phoneNumber;
     private String email;
-    private BigDecimal baseSalary;
+    private String password;
+    private Long idRol;
 
     public UserTestDataBuilder() {
-        // Proporciona valores válidos por defecto para un usuario estándar
-        this.identityDocument = 1037666999L;
-        this.name = "John";
-        this.lastName = "Doe";
-        this.email = "john.doe@example.com";
-        this.baseSalary = new BigDecimal("5000000");
+        this.idUser = 1L;
+        this.identityDocument = 12345L;
+        this.name = "Test User";
+        this.email = "test@test.com";
+        this.password = "password123";
+        this.idRol = 1L;
+    }
+
+    public UserTestDataBuilder withIdUser(Long idUser) {
+        this.idUser = idUser;
+        return this;
     }
 
     public UserTestDataBuilder withIdentityDocument(Long identityDocument) {
         this.identityDocument = identityDocument;
-        return this;
-    }
-
-    public UserTestDataBuilder withName(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public UserTestDataBuilder withLastName(String lastName) {
-        this.lastName = lastName;
         return this;
     }
 
@@ -45,27 +36,26 @@ public class UserTestDataBuilder {
         return this;
     }
 
-    public UserTestDataBuilder withBaseSalary(BigDecimal baseSalary) {
-        this.baseSalary = baseSalary;
+    public UserTestDataBuilder withPassword(String password) {
+        this.password = password;
         return this;
     }
 
-    public UserTestDataBuilder withId(Long idUser) {
-        this.idUser = idUser;
+    public UserTestDataBuilder withIdRol(Long idRol) {
+        this.idRol = idRol;
         return this;
     }
 
     public User build() {
         return User.builder()
-                .idUser(this.idUser)
-                .identityDocument(this.identityDocument)
-                .name(this.name)
-                .lastName(this.lastName)
-                .birthDate(this.birthDate)
-                .address(this.address)
-                .phoneNumber(this.phoneNumber)
-                .email(this.email)
-                .baseSalary(this.baseSalary)
+                .idUser(idUser)
+                .identityDocument(identityDocument)
+                .name(name)
+                .lastName("Test")
+                .baseSalary(new BigDecimal("2000000"))
+                .email(email)
+                .password(password)
+                .idRol(idRol)
                 .build();
     }
 }

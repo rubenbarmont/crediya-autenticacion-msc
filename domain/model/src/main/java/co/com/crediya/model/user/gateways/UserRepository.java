@@ -8,7 +8,7 @@ public interface UserRepository {
     Mono<User> save(User user);
     Mono<Boolean> existsByEmail(String email);
     Mono<Boolean> existsByIdentityDocument(Long identityDocument);
-
-    // --- NUEVO MÉTODO ---
     Mono<User> findByIdentityDocument(Long identityDocument);
+    Mono<User> findByEmail(String email);
+    Mono<User> findById(Long idUser);
 }

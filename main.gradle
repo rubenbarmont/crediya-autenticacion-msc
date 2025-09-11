@@ -21,6 +21,14 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_21
     }
 
+    // --- BLOQUE AÑADIDO ---
+    // Esto asegura que la lista de versiones de Spring se aplique a TODAS las configuraciones
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"
+        }
+    }
+
     //build.dependsOn 'pitest'
 
     test {
